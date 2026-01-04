@@ -1,0 +1,221 @@
+[
+    {
+        "id": "174937512066a823",
+        "type": "tab",
+        "label": "フロー 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "59ec3c60e36cd00a",
+        "type": "inject",
+        "z": "174937512066a823",
+        "name": "0",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "x": 230,
+        "y": 220,
+        "wires": [
+            [
+                "0f7e662ebb051431"
+            ]
+        ]
+    },
+    {
+        "id": "0ddd867da3a60377",
+        "type": "inject",
+        "z": "174937512066a823",
+        "name": "1",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 230,
+        "y": 280,
+        "wires": [
+            [
+                "0f7e662ebb051431"
+            ]
+        ]
+    },
+    {
+        "id": "0f7e662ebb051431",
+        "type": "rpi-gpio out",
+        "z": "174937512066a823",
+        "name": "GPIO21",
+        "pin": "21",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "bcm": true,
+        "x": 540,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "55bca41a25127d0e",
+        "type": "inject",
+        "z": "174937512066a823",
+        "name": "start",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 640,
+        "wires": [
+            [
+                "bcceb94ccb10f855"
+            ]
+        ]
+    },
+    {
+        "id": "bcceb94ccb10f855",
+        "type": "camerapi-takephoto",
+        "z": "174937512066a823",
+        "filemode": "1",
+        "filename": "test.jpg",
+        "filedefpath": "0",
+        "filepath": "/home/pi/",
+        "fileformat": "jpeg",
+        "resolution": "2",
+        "rotation": "0",
+        "fliph": "0",
+        "flipv": "0",
+        "brightness": "50",
+        "contrast": "0",
+        "sharpness": "0",
+        "quality": "80",
+        "imageeffect": "none",
+        "exposuremode": "auto",
+        "iso": "0",
+        "agcwait": "1.0",
+        "led": "0",
+        "awb": "auto",
+        "name": "",
+        "x": 540,
+        "y": 640,
+        "wires": [
+            [
+                "755f52ecf87c303b"
+            ]
+        ]
+    },
+    {
+        "id": "2913e2ff5f035e68",
+        "type": "slack-web-out",
+        "z": "174937512066a823",
+        "client": "ea9b367e3825f746",
+        "name": "",
+        "x": 600,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d562fb1598ea93bc",
+        "type": "function",
+        "z": "174937512066a823",
+        "name": "function 2",
+        "func": "msg.topic = \"chat.postMessage\";\nmsg.payload = {\n    \"channel\": \"all-iot\",\n    \"text\": \"写真を撮影したよ。\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 880,
+        "wires": [
+            [
+                "2913e2ff5f035e68"
+            ]
+        ]
+    },
+    {
+        "id": "755f52ecf87c303b",
+        "type": "file in",
+        "z": "174937512066a823",
+        "name": "",
+        "filename": "/home/pi/test.jpg",
+        "filenameType": "str",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 220,
+        "y": 780,
+        "wires": [
+            [
+                "7e79add6ae1f6be6",
+                "d562fb1598ea93bc"
+            ]
+        ]
+    },
+    {
+        "id": "7e79add6ae1f6be6",
+        "type": "image",
+        "z": "174937512066a823",
+        "name": "",
+        "width": "320",
+        "data": "payload",
+        "dataType": "msg",
+        "thumbnail": false,
+        "active": true,
+        "pass": false,
+        "outputs": 0,
+        "x": 600,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "ea9b367e3825f746",
+        "type": "slack-config",
+        "name": ""
+    },
+    {
+        "id": "62b487d1d1235ad3",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-pi-gpio": "2.0.6",
+            "node-red-contrib-camerapi": "0.0.39",
+            "node-red-contrib-slack": "2.0.0",
+            "node-red-contrib-image-output": "0.6.4"
+        }
+    }
+]
