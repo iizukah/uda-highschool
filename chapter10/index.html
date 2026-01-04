@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>データ送信 & WebSocket テスト</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f3f5f7;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: #fff;
+            width: 650px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #444;
+            font-size: 20px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .input-area, form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 5px rgba(74,144,226,0.4);
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #357ABD;
+        }
+
+        #log {
+            border: 1px solid #ddd;
+            background: #fafafa;
+            padding: 12px;
+            height: 250px;
+            overflow-y: auto;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        #log div {
+            padding: 4px 0;
+        }
+
+        .info { color: #4a90e2; }
+        .server { color: #27ae60; }
+        .client { color: #8e44ad; }
+        .error { color: #e74c3c; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- HTTP POST 送信 -->
+        <div class="section">
+            <h1>ラズパイへデータ送信（HTTP POST）</h1>
+
+            <form action="/" method="POST">
+                <input type="text" name="message" placeholder="メッセージを入力…">
+                <button type="submit">送信</button>
+            </form>
+        </div>
+
+        <!-- WebSocket -->
+        <div class="section">
+            <h1>WebSocket リアルタイム通信テスト</h1>
+
+            <div class="input-area">
+                <input type="text" id="msg" placeholder="メッセージを入力…">
+                <button id="sendBtn">送信</button>
+            </div>
+
+            <h2>ログ</h2>
+            <div id="log"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const log = document.getElementById("log");
+        const msgInput = document.getElementById("msg");
+        const sendBtn = document.getElementById("sendBtn");
+
+        const ws = new WebSocket("ws://192.168.11.64:8765");
+
+        function addLog(text, type="info") {
+            const div = document.createElement("div");
+            div.textContent = text;
+            div.className = type;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        ws.onopen = () => addLog("[INFO] WebSocket 接続しました", "info");
+        ws.onmessage = (event) => addLog("[SERVER] " + event.data, "server");
+        ws.onclose = () => addLog("[INFO] WebSocket が切断されました", "info");
+        ws.onerror = (err) => addLog("[ERROR] " + err, "error");
+
+        sendBtn.onclick = () => {
+            const text = msgInput.value;
+            if (!text) return;
+            ws.send(text);
+            addLog("[CLIENT] " + text, "client");
+            msgInput.value = "";
+        };
+
+        msgInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") sendBtn.click();
+        });
+    </script>
+
+</body>
+</html>

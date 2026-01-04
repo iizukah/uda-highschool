@@ -1,0 +1,1 @@
+sudo ffmpeg -i answer2.wav -acodec pcm_s16le -ar 16000 -ac 1 fixed3.wav
